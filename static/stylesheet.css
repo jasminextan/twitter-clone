@@ -1,0 +1,45 @@
+body {
+    background-color: #242424
+}
+a{
+    color: #E4E0D5
+}
+a.hover{
+    color: #736B92
+}
+.purple{
+    background-color: #736B92;
+}
+.black{
+    background-color: #242424;
+}
+.white{
+    background-color: #E4E0D5;
+}
+
+#rect1{
+    position: absolute;
+    width: 100%;
+    height: 540px;
+    left: 0%;
+    top: 0px;
+    z-index: 1;
+}
+
+#title {
+    /* jasminextan */
+    position: absolute;
+    width: 122px;
+    height: 36px;
+    left: 4.16%;
+    top: 34px;
+
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #EAE1DF;
+}
+
