@@ -4,9 +4,6 @@ body {
 a{
     color: #E4E0D5
 }
-a.hover{
-    color: #736B92
-}
 .purple{
     background-color: #736B92;
 }
@@ -27,9 +24,8 @@ a.hover{
 }
 
 #title {
-    /* jasminextan */
     position: absolute;
-    width: 122px;
+    width: 300px;
     height: 36px;
     left: 4.16%;
     top: 34px;
@@ -40,6 +36,15 @@ a.hover{
     display: flex;
     align-items: center;
     text-align: center;
-    color: #EAE1DF;
+    color: #E4E0D5;
 }
 
+#menu {
+    position: absolute;
+    left: 4.16%;
+    top: 55px;
+
+    font-weight: 700;
+    font-size: 20px;
+    color: #E4E0D5;
+}
