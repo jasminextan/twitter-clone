@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<link rel="stylesheet" href="https://jasminextan.github.io/twitter-clone/static/stylesheet.css">
-<html lang="en">
+<html>
     <head>
         <title>
-            Jasmine Tan's Forum
+            jasmine tan's forum
         </title>
+        <link rel="stylesheet" href="/static/style.css">
         <meta name="description" content="The homepage of a forum by Jasmine Tan.">
     </head>
     <body>
@@ -14,13 +13,16 @@
                 <li style="display:inline"><a href='/'>home</a></li>
                 {% if logged_in %}
                 <li style="display:inline"><a href='/create_message'>create message</a></li>
-                <li style="display:inline"><a href="/search_message">search message</a></li>
-                <li style="display:inline"><a href="/logout">logout</a></li>
+                <li style="display:inline"><a href='/search_message'>search message</a></li>
+                <li style="display:inline"><a href='/logout'>logout</a></li>
                 {% else %}
-                <li style="display:inline"><a href="/login">login</a></li>
-                <li style="display:inline"><a href="/create_user">create user</a></li>
+                <li style="display:inline"><a href='/login'>login</a></li>
+                <li style="display:inline"><a href='/create_user'>create user</a></li>
                 {% endif %}
             </ul>
+            {% block content %}
+            {% endblock %}
+    
         </div>
     </body>
 </html>

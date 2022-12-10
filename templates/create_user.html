@@ -1,1 +1,44 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}
+<h2>Create your user here</h2>
+{%endblock%}
+{%block content%}
+{%if usercreated%}
+<p> User created succesfully!</p>
+{%else%}
+{%if error%}
+<p>Username already exists</p>
+{%endif%}
+{%if typo%}
+
+<p>error</p>
+{%endif%}
+<form action='/create_user' method="POST">
+    <table>
+        <tr>
+            <td>username</td>
+            <td><input type=text name=username placeholder=username > </td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td><input type=password name=password placeholder=password></td>
+        </tr>
+        <tr>
+            <td>repeat password</td>
+            <td><input type=password name=password1 placeholder=repeat password></td>
+        </tr>
+        <tr>
+            <td>age</td>
+
+            <td><input type=text name=age placeholder=age>></td>
+        </tr>
+<tr>
+            <td></td>
+            <td><input type=submit value='register'></td>
+        </tr>
+    </table>
+</form>
+{%endif%}
+
+{% endblock %}

@@ -1,1 +1,19 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}
+<title>WEBPAGE test run: message</title>
+{% endblock %}
+
+
+{% block content %}
+<h1>Create a message</h1>
+{% if created %}
+Your message was created!
+{% endif %}
+<form action=/create_message method=POST>
+    <table>
+        <tr><td>enter your message: </td><td><input class="textfield" type=text name=newMessage></td></tr>
+    </table>
+    <input type=submit value='enter'>
+</form>
+{% endblock %}

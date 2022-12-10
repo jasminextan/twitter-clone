@@ -1,1 +1,34 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>WEBPAGE: search message</title>
+{% endblock %}
+
+
+{% block content %}
+
+{% if default %}
+<h1>Search for a message</h1>
+<form action=/search_message method=POST>
+    <table>
+        <tr><td>search: </td><td><input class="textfield" type=text name=search></td></tr>
+    </table>
+    <input type=submit value='search'>
+</form>
+{% else %}
+<h1>Messages that match your search:</h1>
+{% for message in messages %}
+<div class="display-messages">
+    <h3>{{message.username}} says {{message.text}}</h3>
+    <p>posted at: {{message.created_at}}</p>
+    {%if username == message.username %}
+        <a class="delete-message" href= "/delete_message/{{message.id}}">delete </a>
+        <a class="delete-message" href= "/edit_message/{{message.id}}"> edit </a>
+    {% endif %}
+    <br>
+</div>
+{% endfor %}
+{% endif %}
+
+
+{% endblock %}
