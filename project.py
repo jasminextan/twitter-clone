@@ -72,7 +72,7 @@ def root():
             'message': row_messages[1],
             'username': row_users[0],
             'created_at': row_messages[2],
-            
+            "profpic" : 'https://robohash.org/' + row_users[0],
             'age':row_users[1],
             })
     # render the jinja2 template and pass the result to firefox
@@ -189,6 +189,55 @@ def search_message():
     else:
         return render_template('search_message.html', default=True, username=request.cookies.get('username'), password=request.cookies.get('password'))
 
+
+@app.route('/change_password/<username>', methods=['post', 'get'])
+def change_password(username):
+    if request.form.get('oldPassword'):
+        if request.cookies.get('username') == username:
+            con = sqlite3.connect(args.db_file) 
+            cur = con.cursor()
+            cur.execute('''
+                SELECT password from users where username=?;
+            ''', (username,))
+            rows = cur.fetchall()
+            oldPassword = rows[0][0]
+            
+            if request.form.get('oldPassword') == oldPassword:
+                if request.form.get('password1') == request.form.get('password2'):
+                    cur.execute('''
+                        UPDATE users
+                        SET password = ?
+                        WHERE username = ?
+                    ''', (request.form.get('password1'), request.cookies.get('username')))
+                    con.commit()
+                    return make_response(render_template('change_password.html', allGood=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
+                else: 
+                    return make_response(render_template('change_password.html', repeatPass=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
+            else: 
+                return make_response(render_template('change_password.html', wrongPass=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
+        else: 
+            return make_response(render_template('change_password.html', not_your_username=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
+    else: return make_response(render_template('change_password.html', username=request.cookies.get('username'), password=request.cookies.get('password')))
+
+
+@app.route('/user')
+def user():
+    if(request.cookies.get('username') and request.cookies.get('password')):
+        con = sqlite3.connect(args.db_file)
+        cur = con.cursor()
+        cur.execute('''
+            SELECT message, created_at, id from messages where sender_id=?;
+        ''', (request.cookies.get('username'),))
+        rows = cur.fetchall()
+        messages = []
+        for row in rows:
+            messages.append({'text': row[0], 'created_at': row[1], 'id':row[2]})
+        messages.reverse()
+        return make_response(render_template('user.html', messages=messages, username=request.cookies.get('username'), password=request.cookies.get('password')))
+    else: 
+        return login()
+
+
 @app.route('/delete_account/<username>')
 def delete_account(username):
     if request.cookies.get('username') == username:
@@ -224,8 +273,5 @@ def edit_message(id):
             return make_response(render_template('edit_message.html',not_your=True, id=id, username=request.cookies.get('username'), password=request.cookies.get('password')))
     else:
         return make_response(render_template('edit_message.html',default=True, id=id, username=request.cookies.get('username'), password=request.cookies.get('password')))
-'''@app.route('/static')s
-def create_static():
-    return render_template('static')'''
 
 app.run()

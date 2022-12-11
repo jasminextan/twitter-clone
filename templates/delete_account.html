@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>WEBPAGE test run: delete user {{username}}</title>
+{% endblock %}
+
+
+{% block content %}
+{% if not_your_username %}
+<h1> You cannot delete an account that does not belong to you</h1>
+{% else %}
+<h1> Your account was deleted! </h1>
+{% endif %}
+
+
+{% endblock %}
