@@ -12,14 +12,22 @@ After doing do, this file should "just work".
 import sqlite3
 from flask import Flask, render_template, request, make_response, redirect, url_for
 from datetime import datetime
+
+from flask_babel import Babel, gettext 
 app = Flask(__name__) #creates an app for us
+app.config['BABEL_DEFAULT_LOCALE'] ='es'
+babel = Babel(app)
+
+
 con = sqlite3con = sqlite3.connect('twitter_clone.db')
 cur = con.cursor()
-# args.db_file = 'twitter_clone.db'
 import argparse
 parser = argparse.ArgumentParser(description='Create a database for the twitter project')
 parser.add_argument('--db_file', default='twitter_clone.db')
+DATABASE = 'twitter_clone.db'
 args = parser.parse_args()
+
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def print_debug_info():
     # Get method
@@ -32,11 +40,25 @@ def print_debug_info():
     print('request.cookies.get("username")=', request.cookies.get('username'))
     print('request.cookies.get("password")=', request.cookies.get('password'))
 
+@babel.localeselector
+def get_locale():
+    
+    request.accept_languages.best_match(['es', 'el'])
+
+# class id(DATABASE): 
+#     # ...
+
+#     def set_password(self, password):
+#         self.password_hash = generate_password_hash(password)
+
+#     def check_password(self, password):
+#         return check_password_hash(self.password_hash, password)
 
 @app.route('/') #index page
 def root():
+
     # connect to the database
-    con = sqlite3.connect(args.db_file)
+    con = sqlite3.connect(DATABASE)
     # construct messages,
     # which is a list of dictionaries,
     # where each dictionary contains the information about a message
@@ -65,22 +87,22 @@ def root():
         cur_users = con.cursor()
         cur_users.execute(sql, [row_messages[0]])
         for row_users in cur_users.fetchall():
-            pass
 
-        # build the message dictionary
-        messages.append({
-            'message': row_messages[1],
-            'username': row_users[0],
-            'created_at': row_messages[2],
-            "profpic" : 'https://robohash.org/' + row_users[0],
-            'age':row_users[1],
-            })
+            # build the message dictionary
+            messages.append({
+                'message': row_messages[1],
+                'username': row_users[0],
+                'created_at': row_messages[2],
+                'profpic': 'https://robohash.org/' + row_users[0],
+                'age':row_users[1],
+                })
     # render the jinja2 template and pass the result to firefox
     return render_template('root.html', messages=messages, logged_in=good_credentials)
 
 def are_credentials_good(username,password):
     con = sqlite3.connect('twitter_clone.db')
     cur = con.cursor()
+    username=username
     sql = """
     SELECT password FROM users where username= ?;
     """
@@ -146,23 +168,36 @@ def create_user():
             try:
                 cur.execute(sql, [username, password, age])
                 con.commit()
-                return render_template('create_user.html', usercreated=True)
+                response = make_response(redirect(url_for('root')))
+                response.set_cookie('username', username)
+                response.set_cookie('password', password)
+                return response
             except:
                 return render_template('create_user.html', usercreated= False, error= True )
         else:
             return render_template('create_user.html', usercreated= False, typo=True)
     else:
         return render_template('create_user.html', usercreated= False, error= False)
-    
+
+  
 @app.route('/create_message', methods=['get', 'post'])
 def create_message():
     if(request.cookies.get('username') and request.cookies.get('password')):
         if request.form.get('newMessage'):
-            con = sqlite3.connect(args.db_file)
+            con = sqlite3.connect(DATABASE)
             cur = con.cursor()
+            username = request.cookies.get('username')
+            user_id = ''
+            if username != None:
+                sql = '''
+                SELECT id FROM users WHERE username=?;
+                '''
+                cur.execute(sql, [username])
+                for row in cur.fetchall():
+                    user_id += str(row[0])
             cur.execute('''
                 INSERT INTO messages (sender_id, message) values (?, ?);
-            ''', (request.cookies.get('username'), request.form.get('newMessage')))
+            ''', (user_id, request.form.get('newMessage')))
             con.commit()
             return make_response(render_template('create_message.html', created=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
         else:
@@ -171,10 +206,12 @@ def create_message():
         return login()
 
 
+
+
 @app.route('/search_message', methods=['POST', 'GET'])
 def search_message():
     if request.form.get('search'):
-        con = sqlite3.connect(args.db_file) 
+        con = sqlite3.connect(DATABASE) 
         cur = con.cursor()
         cur.execute('''
             SELECT sender_id, message, created_at, id from messages;
@@ -189,12 +226,11 @@ def search_message():
     else:
         return render_template('search_message.html', default=True, username=request.cookies.get('username'), password=request.cookies.get('password'))
 
-
 @app.route('/change_password/<username>', methods=['post', 'get'])
 def change_password(username):
     if request.form.get('oldPassword'):
         if request.cookies.get('username') == username:
-            con = sqlite3.connect(args.db_file) 
+            con = sqlite3.connect(DATABASE) 
             cur = con.cursor()
             cur.execute('''
                 SELECT password from users where username=?;
@@ -219,11 +255,10 @@ def change_password(username):
             return make_response(render_template('change_password.html', not_your_username=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
     else: return make_response(render_template('change_password.html', username=request.cookies.get('username'), password=request.cookies.get('password')))
 
-
 @app.route('/user')
 def user():
     if(request.cookies.get('username') and request.cookies.get('password')):
-        con = sqlite3.connect(args.db_file)
+        con = sqlite3.connect(DATABASE)
         cur = con.cursor()
         cur.execute('''
             SELECT message, created_at, id from messages where sender_id=?;
@@ -237,11 +272,10 @@ def user():
     else: 
         return login()
 
-
 @app.route('/delete_account/<username>')
 def delete_account(username):
     if request.cookies.get('username') == username:
-        con = sqlite3.connect(args.db_file) 
+        con = sqlite3.connect(DATABASE) 
         cur = con.cursor()
         cur.execute('''
             DELETE from users where username=?;
@@ -250,12 +284,14 @@ def delete_account(username):
         return make_response(render_template('delete_account.html', not_your_username=False, username=request.cookies.get('username'), password=request.cookies.get('password')))
     else:
         return make_response(render_template('delete_account.html', not_your_username=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
-
+'''@app.route('/static')s
+def create_static():
+    return render_template('static')'''
 
 @app.route('/edit_message/<id>', methods=['POST', 'GET'])
 def edit_message(id):
     if request.form.get('newMessage'):
-        con = sqlite3.connect(args.db_file) 
+        con = sqlite3.connect(DATABASE) 
         cur = con.cursor()
         cur.execute('''
             SELECT sender_id, message from messages where id=?;

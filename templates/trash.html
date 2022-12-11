@@ -1,0 +1,28 @@
+
+
+
+<!--
+    
+    {% extends 'base.html' %}
+
+{% block content %}
+<h2>Home</h2>
+
+<table id="messages">
+    <tr>
+        <th style="width: 50px" style="word-wrap: break-word">pic</th>
+        <th style="width: 150px" style="word-wrap: break-word">sender (age)</th>
+        <th style="width: 500px" style="word-wrap: break-word">message</th>
+        <th style="width: 190px" style="word-wrap: break-word">created_at</th>
+    </tr>
+    {% for message in messages %}
+    <tr>
+        <td><img src="{{message['profpic']}}" width="30" alt="alternatetext"></td>
+        <td>{{message['username']}} {{message['age']}}</td>
+        <td>{{message['message']}}</td>
+        <td>{{message['created_at']}}  </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+-->
