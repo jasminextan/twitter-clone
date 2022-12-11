@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login Webpage</h2>
+<h2 id="header">Login Webpage</h2>
 
 {% if bad_credentials %}
 <p class='color:red;'>
@@ -10,7 +10,7 @@
 {% endif %}
 
 <form action='/login' method="POST">
-    <table>
+    <table id="enterinfo">
         <tr>
             <td>username</td>
             <td><input type=text name=username></td>

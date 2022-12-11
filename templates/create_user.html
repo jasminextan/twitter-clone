@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}
-<h2>Create your user here</h2>
-{%endblock%}
 {%block content%}
+<h2 id="header">Create your user here</h2>
 {%if usercreated%}
 <p> User created succesfully!</p>
 {%else%}
@@ -15,7 +13,7 @@
 <p>error</p>
 {%endif%}
 <form action='/create_user' method="POST">
-    <table>
+    <table id="enterinfo">
         <tr>
             <td>username</td>
             <td><input type=text name=username placeholder=username > </td>
@@ -31,7 +29,7 @@
         <tr>
             <td>age</td>
 
-            <td><input type=text name=age placeholder=age>></td>
+            <td><input type=text name=age placeholder=age></td>
         </tr>
 <tr>
             <td></td>

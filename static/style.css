@@ -70,3 +70,22 @@ a{
     margin-top: 0px;
     width: 938px;
 }
+
+#header{
+    margin:0px; 
+    height: 200px;
+    line-height:200px;
+    font-weight: 700;
+    font-size: 42px;
+    text-align: center;
+    color: #E4E0D5;
+}
+
+#enterinfo{
+    font-weight: 700;
+    font-size: 20px;
+    color: #E4E0D5;
+
+    margin-left: auto;
+    margin-right: auto;
+}
