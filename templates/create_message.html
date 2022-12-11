@@ -8,12 +8,15 @@
 {% block content %}
 <h1 id="header">Create a message</h1>
 {% if created %}
-Your message was created!
+<p id="liltext">Your message was created!</p>
 {% endif %}
 <form action=/create_message method=POST>
     <table id="enterinfo">
         <tr><td>enter your message: </td><td><input class="textfield" type=text name=newMessage></td></tr>
     </table>
-    <input type=submit value='enter'>
+    <p></p>
+    <span id="buttonspan">
+        <input type=submit value='enter' id="button">
+    </span>
 </form>
 {% endblock %}

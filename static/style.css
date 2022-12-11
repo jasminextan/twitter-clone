@@ -81,6 +81,16 @@ a{
     color: #E4E0D5;
 }
 
+#subheader{
+    margin:0px; 
+    height: 50px;
+    line-height:50px;
+    font-weight: 700;
+    font-size: 30px;
+    text-align: center;
+    color: #E4E0D5;
+}
+
 #enterinfo{
     font-weight: 700;
     font-size: 20px;
@@ -89,3 +99,35 @@ a{
     margin-left: auto;
     margin-right: auto;
 }
+
+
+#liltext{
+    margin:0px; 
+    height: 30px;
+    line-height:30px;
+    font-weight: 700;
+    font-size: 15px;
+    text-align: center;
+    color: #E4E0D5;
+}
+
+#buttonspan {
+    text-align: center;
+    width: 100%;
+    margin:auto;
+    display: inline-block;
+}
+
+#button{
+    background-color: #736B92;
+    border: none;
+    color: #E4E0D5;
+    padding: 15px 32px;
+    text-align: center;
+    margin:auto;
+    display: inline-block;
+    font-weight: 700;
+    font-size: 15px;
+    color: #E4E0D5;
+}
+  

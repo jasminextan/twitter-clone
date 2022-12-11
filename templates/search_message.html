@@ -10,17 +10,20 @@
 {% if default %}
 <h1 id="header">Search for a message</h1>
 <form action=/search_message method=POST>
-    <table>
+    <table id="enterinfo">
         <tr><td>search: </td><td><input class="textfield" type=text name=search></td></tr>
     </table>
-    <input type=submit value='search'>
+    <p></p>
+    <span id="buttonspan">
+        <input type=submit value='search' id="button">
+    </span>
 </form>
 {% else %}
-<h1>Messages that match your search:</h1>
+<h1 id="header">Messages that match your search:</h1>
 {% for message in messages %}
 <div class="display-messages">
-    <h3>{{message.username}} says {{message.text}}</h3>
-    <p>posted at: {{message.created_at}}</p>
+    <h3 id="subheader"">{{message.username}} says {{message.text}}</h3>
+    <p id="liltext">posted at: {{message.created_at}}</p>
     {%if username == message.username %}
         <a class="delete-message" href= "/delete_message/{{message.id}}">delete </a>
         <a class="delete-message" href= "/edit_message/{{message.id}}"> edit </a>
