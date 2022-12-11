@@ -10,14 +10,14 @@
         <div id="rect1" class="purple">
             <h1 id="title">jasmine tan's forum</h1>
             <ul id="menu">
-                <li style="display:inline"><a href='/'>home</a></li>
+                <li><a href='/'>home</a></li>
                 {% if logged_in %}
-                <li style="display:inline"><a href='/create_message'>create message</a></li>
-                <li style="display:inline"><a href='/search_message'>search message</a></li>
-                <li style="display:inline"><a href='/logout'>logout</a></li>
+                <li><a href='/create_message'>create message</a></li>
+                <li><a href='/search_message'>search message</a></li>
+                <li><a href='/logout'>logout</a></li>
                 {% else %}
-                <li style="display:inline"><a href='/login'>login</a></li>
-                <li style="display:inline"><a href='/create_user'>create user</a></li>
+                <li><a href='/login'>login</a></li>
+                <li><a href='/create_user'>create user</a></li>
                 {% endif %}
             </ul>
             {% block content %}

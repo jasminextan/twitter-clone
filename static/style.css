@@ -48,3 +48,17 @@ a{
     font-size: 20px;
     color: #E4E0D5;
 }
+
+#messages {
+    position: absolute;
+    left: 4.16%;
+    top: 55px;
+
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 310px;
+
+    font-weight: 700;
+    font-size: 20px;
+    color: #E4E0D5;
+}
