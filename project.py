@@ -12,12 +12,12 @@ After doing do, this file should "just work".
 import sqlite3
 from flask import Flask, render_template, request, make_response, redirect, url_for
 from datetime import datetime
-
+import bleach
+import markdown_compiler
 from flask_babel import Babel, gettext 
 app = Flask(__name__) #creates an app for us
 app.config['BABEL_DEFAULT_LOCALE'] ='es'
 babel = Babel(app)
-
 
 con = sqlite3con = sqlite3.connect('twitter_clone.db')
 cur = con.cursor()
@@ -118,6 +118,24 @@ def are_credentials_good(username,password):
     # else:
     #     return False
 
+def markdown(comment):
+    if comment is not None:
+        comment_list=comment.split(' ')
+        if any('https://' in word for word in comment_list) or any('http://' in word for word in comment_list):
+            print(comment_list)
+            comment_link = bleach.linkify(comment)
+            comment_converted=markdown_compiler.compile_lines('\n'+comment_link+'\n')
+            comment_converted_clean=bleach.clean(comment_converted, tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 
+            'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], attributes=['style', 'href', 'rel'])
+            return comment_converted_clean
+        else:
+            comment_converted=markdown_compiler.compile_lines('\n'+comment+'\n')
+            comment_converted_clean=bleach.clean(comment_converted, tags=['a', 'abbr', 'acronym', 'b', 'blockquote', 
+            'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p'], attributes=['style', 'href'])
+            return comment_converted_clean
+    else:
+        return comment
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     print_debug_info()
@@ -146,10 +164,10 @@ def login():
 
 @app.route('/logout')
 def logout():
-    response = make_response(render_template('logout.html'))
-    response.delete_cookie('username')
-    response.delete_cookie('password')
-    return response
+    res = make_response(render_template('logout.html'))
+    res.set_cookie('username', '', expires=0)
+    res.set_cookie('password', '', expires=0)
+    return res
 
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
@@ -195,9 +213,11 @@ def create_message():
                 cur.execute(sql, [username])
                 for row in cur.fetchall():
                     user_id += str(row[0])
+            time = datetime.now()
+            time = time.strftime("%Y-%m-%d %H:%M:%S")
             cur.execute('''
                 INSERT INTO messages (sender_id, message) values (?, ?);
-            ''', (user_id, request.form.get('newMessage')))
+            ''', (user_id, markdown(request.form.get('newMessage'))))
             con.commit()
             return make_response(render_template('create_message.html', created=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
         else:
@@ -272,21 +292,50 @@ def user():
     else: 
         return login()
 
+
 @app.route('/delete_account/<username>')
 def delete_account(username):
     if request.cookies.get('username') == username:
-        con = sqlite3.connect(DATABASE) 
+        con = sqlite3.connect(args.db_file) 
         cur = con.cursor()
         cur.execute('''
             DELETE from users where username=?;
         ''', (username,))
         con.commit()
-        return make_response(render_template('delete_account.html', not_your_username=False, username=request.cookies.get('username'), password=request.cookies.get('password')))
+        res = make_response(render_template('delete_account.html'))
+        res.set_cookie('username', '', expires=0)
+        res.set_cookie('password', '', expires=0)
+        return make_response(res)
     else:
         return make_response(render_template('delete_account.html', not_your_username=True, username=request.cookies.get('username'), password=request.cookies.get('password')))
 '''@app.route('/static')s
 def create_static():
     return render_template('static')'''
+
+@app.route('/edit_message/<id>', methods=['POST', 'GET'])
+def edit_message(id):
+    if request.form.get('newMessage'):
+        con = sqlite3.connect(args.db_file) 
+        cur = con.cursor()
+        cur.execute('''
+            SELECT sender_id, message from messages where id=?;
+        ''', (id,))
+        rows = cur.fetchall()
+        if rows[0][0] == request.cookies.get('username'):
+            cur.execute('''
+                UPDATE messages
+                SET message = ?
+                WHERE id = ?
+            ''', (request.form.get('newMessage'),id))
+            con.commit()
+            return make_response(render_template('edit_message.html',allGood=True, id=id, username=request.cookies.get('username'), password=request.cookies.get('password')))
+        else:
+            return make_response(render_template('edit_message.html',not_your=True, id=id, username=request.cookies.get('username'), password=request.cookies.get('password')))
+    else:
+        return make_response(render_template('edit_message.html',default=True, id=id, username=request.cookies.get('username'), password=request.cookies.get('password')))
+
+app.run()
+
 
 @app.route('/edit_message/<id>', methods=['POST', 'GET'])
 def edit_message(id):

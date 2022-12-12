@@ -4,7 +4,7 @@
 <h2 id="header">Login Webpage</h2>
 
 {% if bad_credentials %}
-<p class='color:red;'>
+<p>
     ERROR: Username or password incorrect.
 </p>
 {% endif %}
@@ -17,7 +17,7 @@
         </tr>
         <tr>
             <td>password</td>
-            <td><input type=text name=password></td>
+            <td><input type=password name=password></td>
         </tr>
         <tr>
             <td></td>
@@ -25,5 +25,4 @@
         </tr>
     </table>
 </form>
-<p>New information.</p>
 {% endblock %}
